@@ -19,6 +19,7 @@ const defaultSettings: Settings = {
   is_kleinunternehmer: 'true',
   payment_terms_days: '14',
   invoice_prefix: 'RE',
+  invoice_suffix: 'Bauer',
 }
 
 export default function SettingsPage() {
@@ -202,8 +203,14 @@ export default function SettingsPage() {
                 <input type="text" value={form.invoice_prefix} onChange={e => update('invoice_prefix', e.target.value)}
                   placeholder="RE"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1 font-medium">Rechnungssuffix (Nachname)</label>
+                <input type="text" value={form.invoice_suffix} onChange={e => update('invoice_suffix', e.target.value)}
+                  placeholder="Bauer"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <p className="mt-1 text-xs text-gray-400">
-                  Beispiel: Präfix „RE" → RE-2025-001
+                  Ergebnis: RE-2026-03-Bauer
                 </p>
               </div>
               <div>

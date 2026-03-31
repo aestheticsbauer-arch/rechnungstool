@@ -90,6 +90,7 @@ function initSchema(db: Database.Database) {
     is_kleinunternehmer: 'true',
     payment_terms_days: '14',
     invoice_prefix: 'RE',
+    invoice_suffix: 'Bauer',
   }
 
   const insertSetting = db.prepare(

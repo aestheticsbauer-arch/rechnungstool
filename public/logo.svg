@@ -1,0 +1,39 @@
+<svg viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg">
+  <!-- Aperture / lens icon – top right, above the "I" -->
+  <g transform="translate(188,22)">
+    <!-- r=20, 8 segments of 45° each, 6 filled, 2 empty (lower-left gap) -->
+    <!-- Points on circle: 0°(20,0) 45°(14.14,14.14) 90°(0,20) 135°(-14.14,14.14)
+         180°(-20,0) 225°(-14.14,-14.14) 270°(0,-20) 315°(14.14,-14.14)        -->
+    <!-- 0°→45°: right to lower-right – filled -->
+    <path d="M0,0 L20,0 A20,20 0 0,1 14.14,14.14 Z" fill="black"/>
+    <!-- 45°→90°: lower-right to bottom – filled -->
+    <path d="M0,0 L14.14,14.14 A20,20 0 0,1 0,20 Z" fill="black"/>
+    <!-- 90°→135°: bottom to lower-left – EMPTY (gap) -->
+    <!-- 135°→180°: lower-left to left – EMPTY (gap) -->
+    <!-- 180°→225°: left to upper-left – filled -->
+    <path d="M0,0 L-20,0 A20,20 0 0,1 -14.14,-14.14 Z" fill="black"/>
+    <!-- 225°→270°: upper-left to top – filled -->
+    <path d="M0,0 L-14.14,-14.14 A20,20 0 0,1 0,-20 Z" fill="black"/>
+    <!-- 270°→315°: top to upper-right – filled -->
+    <path d="M0,0 L0,-20 A20,20 0 0,1 14.14,-14.14 Z" fill="black"/>
+    <!-- 315°→360°: upper-right to right – filled -->
+    <path d="M0,0 L14.14,-14.14 A20,20 0 0,1 20,0 Z" fill="black"/>
+  </g>
+
+  <!-- LUMI – large, spaced, medium weight -->
+  <text x="2" y="74"
+        font-family="'Arial', 'Helvetica Neue', Helvetica, sans-serif"
+        font-size="58"
+        font-weight="400"
+        fill="black"
+        letter-spacing="7">LUMI</text>
+
+  <!-- Content Clinic – small, centered under LUMI -->
+  <text x="103" y="87"
+        text-anchor="middle"
+        font-family="'Arial', 'Helvetica Neue', Helvetica, sans-serif"
+        font-size="11"
+        font-weight="400"
+        fill="black"
+        letter-spacing="1.5">Content Clinic</text>
+</svg>

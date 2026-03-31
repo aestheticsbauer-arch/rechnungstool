@@ -19,6 +19,7 @@ export interface Settings {
   is_kleinunternehmer: string
   payment_terms_days: string
   invoice_prefix: string
+  invoice_suffix: string
 }
 
 export interface Customer {
