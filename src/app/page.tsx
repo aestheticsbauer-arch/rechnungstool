@@ -11,6 +11,47 @@ interface MonthlyStats {
   invoice_count: number
 }
 
+const inputStyle = {
+  backgroundColor: '#1e1e1e',
+  border: '1px solid rgba(201,169,110,0.3)',
+  color: '#f5f2ee',
+  borderRadius: '3px',
+  padding: '8px 12px',
+  fontSize: '13px',
+  fontFamily: '"DM Sans", system-ui, sans-serif',
+  outline: 'none',
+}
+
+const statusBadge = (status: string) => {
+  if (status === 'Bezahlt') return {
+    backgroundColor: 'rgba(201,169,110,0.15)',
+    color: '#c9a96e',
+    padding: '2px 8px',
+    borderRadius: '3px',
+    fontSize: '11px',
+    fontWeight: '500',
+    fontFamily: '"DM Sans", system-ui, sans-serif',
+  }
+  if (status === 'Versendet') return {
+    backgroundColor: 'rgba(201,169,110,0.08)',
+    color: '#8a8580',
+    padding: '2px 8px',
+    borderRadius: '3px',
+    fontSize: '11px',
+    fontWeight: '500',
+    fontFamily: '"DM Sans", system-ui, sans-serif',
+  }
+  return {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    color: '#8a8580',
+    padding: '2px 8px',
+    borderRadius: '3px',
+    fontSize: '11px',
+    fontWeight: '500',
+    fontFamily: '"DM Sans", system-ui, sans-serif',
+  }
+}
+
 export default function Dashboard() {
   const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([])
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStats[]>([])
@@ -43,52 +84,89 @@ export default function Dashboard() {
   const yearIncome = monthlyStats.reduce((s, m) => s + m.income, 0)
   const maxIncome = Math.max(...monthlyStats.map(m => m.income), 1)
 
-  const statusColor = (status: string) => {
-    if (status === 'Bezahlt') return 'bg-green-100 text-green-800'
-    if (status === 'Versendet') return 'bg-blue-100 text-blue-800'
-    return 'bg-gray-100 text-gray-700'
-  }
-
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="text-gray-500">Lade Daten...</div>
+      <div style={{ padding: '40px', color: '#8a8580', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+        Lade Daten...
       </div>
     )
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Übersicht</h1>
+    <div style={{ padding: '40px', maxWidth: '1100px', margin: '0 auto' }}>
+      <h1 style={{
+        fontFamily: '"Playfair Display", Georgia, serif',
+        fontSize: '26px',
+        fontWeight: '700',
+        color: '#c9a96e',
+        marginBottom: '28px',
+      }}>Übersicht</h1>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-          <p className="text-sm text-gray-500 mb-1">Einnahmen {GERMAN_MONTHS[currentMonth - 1]}</p>
-          <p className="text-2xl font-bold text-gray-900">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' }}>
+        <div style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: '4px', padding: '20px' }}>
+          <p style={{ fontSize: '12px', color: '#8a8580', marginBottom: '6px', fontFamily: '"DM Sans", system-ui, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Einnahmen {GERMAN_MONTHS[currentMonth - 1]}
+          </p>
+          <p style={{ fontSize: '24px', fontWeight: '700', color: '#f5f2ee', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
             {formatGermanCurrency(currentMonthStats?.income || 0)}
           </p>
-          <p className="text-xs text-gray-400 mt-1">{currentMonthStats?.invoice_count || 0} Rechnungen</p>
+          <p style={{ fontSize: '11px', color: '#8a8580', marginTop: '4px', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+            {currentMonthStats?.invoice_count || 0} Rechnungen
+          </p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-          <p className="text-sm text-gray-500 mb-1">Jahreseinnahmen {currentYear}</p>
-          <p className="text-2xl font-bold text-gray-900">{formatGermanCurrency(yearIncome)}</p>
-          <p className="text-xs text-gray-400 mt-1">
+        <div style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: '4px', padding: '20px' }}>
+          <p style={{ fontSize: '12px', color: '#8a8580', marginBottom: '6px', fontFamily: '"DM Sans", system-ui, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Jahreseinnahmen {currentYear}
+          </p>
+          <p style={{ fontSize: '24px', fontWeight: '700', color: '#f5f2ee', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+            {formatGermanCurrency(yearIncome)}
+          </p>
+          <p style={{ fontSize: '11px', color: '#8a8580', marginTop: '4px', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
             {monthlyStats.reduce((s, m) => s + m.invoice_count, 0)} Rechnungen gesamt
           </p>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-          <p className="text-sm text-gray-500 mb-1">Schnellaktionen</p>
-          <div className="flex flex-col gap-2 mt-2">
+        <div style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: '4px', padding: '20px' }}>
+          <p style={{ fontSize: '12px', color: '#8a8580', marginBottom: '10px', fontFamily: '"DM Sans", system-ui, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            Schnellaktionen
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <Link
               href="/invoices/new"
-              className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '8px 16px',
+                backgroundColor: '#c9a96e',
+                color: '#111111',
+                fontSize: '12px',
+                fontWeight: '500',
+                borderRadius: '3px',
+                textDecoration: 'none',
+                fontFamily: '"DM Sans", system-ui, sans-serif',
+                letterSpacing: '0.02em',
+              }}
             >
               + Neue Rechnung
             </Link>
             <Link
               href="/customers/new"
-              className="inline-flex items-center justify-center px-4 py-2 bg-white text-blue-600 text-sm font-medium rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '8px 16px',
+                backgroundColor: 'transparent',
+                color: '#c9a96e',
+                fontSize: '12px',
+                fontWeight: '500',
+                borderRadius: '3px',
+                textDecoration: 'none',
+                border: '1px solid #c9a96e',
+                fontFamily: '"DM Sans", system-ui, sans-serif',
+                letterSpacing: '0.02em',
+              }}
             >
               + Neuer Kunde
             </Link>
@@ -97,56 +175,56 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Invoices */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-800">Letzte Rechnungen</h2>
-          <Link href="/invoices" className="text-sm text-blue-600 hover:underline">
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: '4px', marginBottom: '24px' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(201,169,110,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: '16px', fontWeight: '600', color: '#f5f2ee', margin: 0 }}>
+            Letzte Rechnungen
+          </h2>
+          <Link href="/invoices" style={{ fontSize: '12px', color: '#c9a96e', textDecoration: 'none', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
             Alle anzeigen →
           </Link>
         </div>
         {recentInvoices.length === 0 ? (
-          <div className="px-5 py-8 text-center text-gray-400 text-sm">
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: '#8a8580', fontSize: '13px', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
             Noch keine Rechnungen vorhanden.{' '}
-            <Link href="/invoices/new" className="text-blue-600 hover:underline">
+            <Link href="/invoices/new" style={{ color: '#c9a96e', textDecoration: 'none' }}>
               Erste Rechnung erstellen
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
-                  <th className="px-5 py-3 text-left font-medium">Rechnungsnr.</th>
-                  <th className="px-5 py-3 text-left font-medium">Kunde</th>
-                  <th className="px-5 py-3 text-left font-medium">Datum</th>
-                  <th className="px-5 py-3 text-right font-medium">Betrag</th>
-                  <th className="px-5 py-3 text-center font-medium">Status</th>
-                  <th className="px-5 py-3 text-right font-medium">Aktion</th>
+                <tr style={{ backgroundColor: '#141414' }}>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontSize: '10px', color: '#8a8580', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: '"DM Sans", system-ui, sans-serif' }}>Rechnungsnr.</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontSize: '10px', color: '#8a8580', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: '"DM Sans", system-ui, sans-serif' }}>Kunde</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontSize: '10px', color: '#8a8580', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: '"DM Sans", system-ui, sans-serif' }}>Datum</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'right', fontSize: '10px', color: '#8a8580', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: '"DM Sans", system-ui, sans-serif' }}>Betrag</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'center', fontSize: '10px', color: '#8a8580', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: '"DM Sans", system-ui, sans-serif' }}>Status</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'right', fontSize: '10px', color: '#8a8580', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: '"DM Sans", system-ui, sans-serif' }}>Aktion</th>
                 </tr>
               </thead>
               <tbody>
-                {recentInvoices.map((inv, i) => (
+                {recentInvoices.map((inv) => (
                   <tr
                     key={inv.id}
-                    className={`border-t border-gray-100 hover:bg-gray-50 ${i % 2 === 0 ? '' : 'bg-gray-50/30'}`}
+                    style={{ borderBottom: '1px solid rgba(201,169,110,0.08)' }}
                   >
-                    <td className="px-5 py-3 font-mono text-gray-700">{inv.invoice_number}</td>
-                    <td className="px-5 py-3 text-gray-700">
+                    <td style={{ padding: '12px 20px', fontFamily: 'monospace', color: '#8a8580', fontSize: '11px' }}>{inv.invoice_number}</td>
+                    <td style={{ padding: '12px 20px', color: '#f5f2ee', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
                       {inv.customer_name || inv.customer_snapshot?.name || '—'}
                     </td>
-                    <td className="px-5 py-3 text-gray-500">{formatGermanDate(inv.date)}</td>
-                    <td className="px-5 py-3 text-right font-medium text-gray-800">
+                    <td style={{ padding: '12px 20px', color: '#8a8580', fontFamily: '"DM Sans", system-ui, sans-serif' }}>{formatGermanDate(inv.date)}</td>
+                    <td style={{ padding: '12px 20px', textAlign: 'right', fontWeight: '500', color: '#f5f2ee', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
                       {formatGermanCurrency(inv.total)}
                     </td>
-                    <td className="px-5 py-3 text-center">
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor(inv.status)}`}>
-                        {inv.status}
-                      </span>
+                    <td style={{ padding: '12px 20px', textAlign: 'center' }}>
+                      <span style={statusBadge(inv.status)}>{inv.status}</span>
                     </td>
-                    <td className="px-5 py-3 text-right">
+                    <td style={{ padding: '12px 20px', textAlign: 'right' }}>
                       <Link
                         href={`/invoices/${inv.id}`}
-                        className="text-blue-600 hover:underline text-xs"
+                        style={{ color: '#c9a96e', textDecoration: 'none', fontSize: '12px', fontFamily: '"DM Sans", system-ui, sans-serif' }}
                       >
                         Details
                       </Link>
@@ -160,36 +238,40 @@ export default function Dashboard() {
       </div>
 
       {/* Monthly Income Bar Chart */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-800">Monatseinnahmen {currentYear}</h2>
+      <div style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: '4px' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(201,169,110,0.1)' }}>
+          <h2 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: '16px', fontWeight: '600', color: '#f5f2ee', margin: 0 }}>
+            Monatseinnahmen {currentYear}
+          </h2>
         </div>
-        <div className="p-5">
-          <div className="flex items-end gap-2 h-40">
+        <div style={{ padding: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '140px' }}>
             {monthlyStats.map((m) => {
               const heightPct = maxIncome > 0 ? (m.income / maxIncome) * 100 : 0
               const isCurrentMonth = m.month === currentMonth
               return (
-                <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
+                <div key={m.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                   <div
-                    className="w-full rounded-t transition-all duration-300"
                     style={{
+                      width: '100%',
+                      borderRadius: '2px 2px 0 0',
+                      transition: 'all 0.3s ease',
                       height: `${Math.max(heightPct, m.income > 0 ? 4 : 0)}%`,
-                      backgroundColor: isCurrentMonth ? '#2563eb' : '#93c5fd',
+                      backgroundColor: isCurrentMonth ? '#c9a96e' : 'rgba(201,169,110,0.3)',
                     }}
                     title={`${getMonthName(m.month)}: ${formatGermanCurrency(m.income)}`}
                   />
-                  <span className="text-xs text-gray-400">{getMonthName(m.month).slice(0, 3)}</span>
+                  <span style={{ fontSize: '10px', color: '#8a8580', fontFamily: '"DM Sans", system-ui, sans-serif' }}>{getMonthName(m.month).slice(0, 3)}</span>
                 </div>
               )
             })}
           </div>
-          <div className="mt-3 flex gap-4 text-xs text-gray-400">
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-blue-600 inline-block" /> Aktueller Monat
+          <div style={{ marginTop: '12px', display: 'flex', gap: '16px', fontSize: '11px', color: '#8a8580', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: '#c9a96e', display: 'inline-block' }} /> Aktueller Monat
             </span>
-            <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-blue-300 inline-block" /> Andere Monate
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: 'rgba(201,169,110,0.3)', display: 'inline-block' }} /> Andere Monate
             </span>
           </div>
         </div>
