@@ -92,6 +92,7 @@ export default function InvoicePrintPage() {
           height: 48px;
           width: auto;
           display: block;
+          transform: rotate(-90deg);
         }
 
         .page {
