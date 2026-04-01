@@ -57,7 +57,6 @@ export default function InvoicePrintPage() {
   const fmtEur = (n: number) =>
     new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(n)
 
-  // "250€" style for the main total line (no trailing ,00 if whole number)
   const fmtTotal = (n: number) => {
     const formatted = new Intl.NumberFormat('de-DE', {
       minimumFractionDigits: 2,
@@ -76,14 +75,31 @@ export default function InvoicePrintPage() {
           font-family: Arial, Helvetica, sans-serif;
           font-size: 10.5pt;
           color: #000;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        .logo-strip {
+          background: #000000;
+          width: 210mm;
+          margin: 20px auto 0 auto;
+          padding: 14px 20mm;
+          display: flex;
+          align-items: center;
+        }
+
+        .logo-strip img {
+          height: 48px;
+          width: auto;
+          display: block;
         }
 
         .page {
           width: 210mm;
-          min-height: 297mm;
-          margin: 20px auto;
+          min-height: 260mm;
+          margin: 0 auto 20px auto;
           background: white;
-          padding: 18mm 20mm 20mm 20mm;
+          padding: 14mm 20mm 20mm 20mm;
           position: relative;
           box-shadow: 0 2px 20px rgba(0,0,0,0.18);
         }
@@ -92,25 +108,19 @@ export default function InvoicePrintPage() {
           position: fixed;
           top: 15px;
           right: 15px;
-          background: #2563eb;
-          color: white;
+          background: #c9a96e;
+          color: #111111;
           border: none;
           padding: 10px 22px;
-          border-radius: 8px;
+          border-radius: 3px;
           font-size: 14px;
           cursor: pointer;
           font-family: Arial, sans-serif;
-          box-shadow: 0 2px 10px rgba(37,99,235,0.4);
+          font-weight: 600;
+          box-shadow: 0 2px 10px rgba(201,169,110,0.4);
           z-index: 100;
         }
-        .print-btn:hover { background: #1d4ed8; }
-
-        .logo {
-          display: block;
-          height: 20mm;
-          width: auto;
-          margin-bottom: 8mm;
-        }
+        .print-btn:hover { background: #b8944f; }
 
         p { line-height: 1.6; }
 
@@ -139,11 +149,15 @@ export default function InvoicePrintPage() {
         .closing { margin-top: 12mm; }
 
         @media print {
-          body { background: white; }
+          body { background: white; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+          .logo-strip {
+            margin: 0 auto;
+            background: #000000 !important;
+          }
           .page {
-            margin: 0;
+            margin: 0 auto;
             box-shadow: none;
-            padding: 18mm 20mm 20mm 20mm;
+            padding: 14mm 20mm 20mm 20mm;
           }
           .print-btn { display: none !important; }
         }
@@ -153,10 +167,15 @@ export default function InvoicePrintPage() {
         Drucken / Als PDF speichern
       </button>
 
-      <div className="page">
+      {/* Black logo strip */}
+      <div className="logo-strip">
+        <img
+          src="https://i.postimg.cc/ZW5x32q3/The-(Deine-Geschichte).png"
+          alt="Logo"
+        />
+      </div>
 
-        {/* Logo – small, top */}
-        <img src="/logo.svg" alt="LUMI Content Clinic" className="logo" />
+      <div className="page">
 
         {/* Sender info */}
         <div className="section">

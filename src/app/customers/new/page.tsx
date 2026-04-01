@@ -3,6 +3,40 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: '#1e1e1e',
+  border: '1px solid rgba(201,169,110,0.3)',
+  color: '#f5f2ee',
+  borderRadius: 3,
+  padding: '8px 12px',
+  fontSize: 13,
+  outline: 'none',
+  fontFamily: '"DM Sans", system-ui, sans-serif',
+  boxSizing: 'border-box',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  color: '#8a8580',
+  marginBottom: 4,
+  fontWeight: 500,
+}
+
+const sectionStyle: React.CSSProperties = {
+  padding: '24px',
+  borderBottom: '1px solid rgba(201,169,110,0.1)',
+}
+
+const sectionHeadingStyle: React.CSSProperties = {
+  fontFamily: '"Playfair Display", Georgia, serif',
+  fontSize: 15,
+  fontWeight: 600,
+  color: '#c9a96e',
+  margin: '0 0 16px 0',
+}
+
 export default function NewCustomerPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
@@ -54,107 +88,100 @@ export default function NewCustomerPage() {
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} className="text-gray-400 hover:text-gray-600 text-sm">← Zurück</button>
-        <h1 className="text-2xl font-bold text-gray-900">Neuer Kunde</h1>
+    <div style={{ padding: '32px', maxWidth: 680, margin: '0 auto', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <button onClick={() => router.back()} style={{ background: 'transparent', border: 'none', color: '#8a8580', fontSize: 13, cursor: 'pointer', padding: 0 }}>← Zurück</button>
+        <h1 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 26, fontWeight: 700, color: '#c9a96e', margin: 0 }}>
+          Neuer Kunde
+        </h1>
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+        <div style={{ marginBottom: 16, background: 'rgba(192,57,43,0.1)', border: '1px solid rgba(192,57,43,0.3)', color: '#e07060', borderRadius: 3, padding: '10px 16px', fontSize: 13 }}>
           {error}
         </div>
       )}
 
       <form onSubmit={e => handleSubmit(e, 'list')}>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100">
+        <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3 }}>
 
           {/* Company Info */}
-          <div className="p-6">
-            <h2 className="font-semibold text-gray-800 mb-4">Firmendaten</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Firmenname / Name *</label>
+          <div style={sectionStyle}>
+            <h2 style={sectionHeadingStyle}>Firmendaten</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Firmenname / Name *</label>
                 <input type="text" value={form.name} onChange={e => update('name', e.target.value)}
-                  placeholder="Musterfirma GmbH"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="Musterfirma GmbH" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Ansprechpartner</label>
+                <label style={labelStyle}>Ansprechpartner</label>
                 <input type="text" value={form.contact_name} onChange={e => update('contact_name', e.target.value)}
-                  placeholder="Max Mustermann"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="Max Mustermann" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">E-Mail</label>
+                <label style={labelStyle}>E-Mail</label>
                 <input type="email" value={form.email} onChange={e => update('email', e.target.value)}
-                  placeholder="kontakt@firma.de"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="kontakt@firma.de" style={inputStyle} />
               </div>
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Straße + Hausnummer</label>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Straße + Hausnummer</label>
                 <input type="text" value={form.address} onChange={e => update('address', e.target.value)}
-                  placeholder="Musterstraße 42"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="Musterstraße 42" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">PLZ</label>
+                <label style={labelStyle}>PLZ</label>
                 <input type="text" value={form.postal_code} onChange={e => update('postal_code', e.target.value)}
-                  placeholder="12345"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="12345" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Ort</label>
+                <label style={labelStyle}>Ort</label>
                 <input type="text" value={form.city} onChange={e => update('city', e.target.value)}
-                  placeholder="Berlin"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="Berlin" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Land</label>
+                <label style={labelStyle}>Land</label>
                 <input type="text" value={form.country} onChange={e => update('country', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">USt-IdNr. (Kunde)</label>
+                <label style={labelStyle}>USt-IdNr. (Kunde)</label>
                 <input type="text" value={form.tax_id} onChange={e => update('tax_id', e.target.value)}
-                  placeholder="DE123456789"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="DE123456789" style={inputStyle} />
               </div>
             </div>
           </div>
 
           {/* Default Service */}
-          <div className="p-6">
-            <h2 className="font-semibold text-gray-800 mb-4">Standard-Leistung (für schnelle Rechnungserstellung)</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Standard-Leistungsbeschreibung</label>
+          <div style={sectionStyle}>
+            <h2 style={sectionHeadingStyle}>Standard-Leistung (für schnelle Rechnungserstellung)</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Standard-Leistungsbeschreibung</label>
                 <input type="text" value={form.default_service} onChange={e => update('default_service', e.target.value)}
-                  placeholder="z.B. Social Media Management – Instagram & Facebook"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="z.B. Social Media Management – Instagram & Facebook" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Standard-Betrag (€)</label>
+                <label style={labelStyle}>Standard-Betrag (€)</label>
                 <input type="number" value={form.default_amount} onChange={e => update('default_amount', e.target.value)}
-                  placeholder="0.00" step="0.01" min="0"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="0.00" step="0.01" min="0" style={inputStyle} />
               </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="p-6 flex gap-3 justify-end flex-wrap">
+          <div style={{ padding: '20px 24px', display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
             <button type="button" onClick={() => router.back()}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600">
+              style={{ padding: '8px 18px', fontSize: 13, background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', borderRadius: 3, cursor: 'pointer' }}>
               Abbrechen
             </button>
             <button type="submit" disabled={saving}
-              className="px-4 py-2 text-sm border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 disabled:opacity-50">
+              style={{ padding: '8px 18px', fontSize: 13, background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', borderRadius: 3, cursor: 'pointer', opacity: saving ? 0.5 : 1 }}>
               {saving ? 'Speichern...' : 'Speichern'}
             </button>
             <button type="button" disabled={saving}
               onClick={e => handleSubmit(e as unknown as React.FormEvent, 'invoice')}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              style={{ padding: '8px 18px', fontSize: 13, background: '#c9a96e', color: '#111111', borderRadius: 3, border: 'none', cursor: 'pointer', fontWeight: 600, opacity: saving ? 0.5 : 1 }}>
               {saving ? 'Speichern...' : 'Speichern & Rechnung erstellen'}
             </button>
           </div>

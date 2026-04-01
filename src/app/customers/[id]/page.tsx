@@ -6,10 +6,44 @@ import Link from 'next/link'
 import { formatGermanCurrency, formatGermanDate } from '@/lib/utils'
 import type { Customer, Invoice } from '@/lib/types'
 
-const statusColor = (status: string) => {
-  if (status === 'Bezahlt') return 'bg-green-100 text-green-800'
-  if (status === 'Versendet') return 'bg-blue-100 text-blue-800'
-  return 'bg-gray-100 text-gray-700'
+const statusStyle = (status: string): React.CSSProperties => {
+  if (status === 'Bezahlt') return { background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 3, padding: '2px 8px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+  if (status === 'Versendet') return { background: 'rgba(201,169,110,0.15)', color: '#c9a96e', border: '1px solid rgba(201,169,110,0.3)', borderRadius: 3, padding: '2px 8px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+  return { background: 'rgba(138,133,128,0.15)', color: '#8a8580', border: '1px solid rgba(138,133,128,0.3)', borderRadius: 3, padding: '2px 8px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: '#1e1e1e',
+  border: '1px solid rgba(201,169,110,0.3)',
+  color: '#f5f2ee',
+  borderRadius: 3,
+  padding: '8px 12px',
+  fontSize: 13,
+  outline: 'none',
+  fontFamily: '"DM Sans", system-ui, sans-serif',
+  boxSizing: 'border-box',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  color: '#8a8580',
+  marginBottom: 4,
+  fontWeight: 500,
+}
+
+const sectionStyle: React.CSSProperties = {
+  padding: '24px',
+  borderBottom: '1px solid rgba(201,169,110,0.1)',
+}
+
+const sectionHeadingStyle: React.CSSProperties = {
+  fontFamily: '"Playfair Display", Georgia, serif',
+  fontSize: 15,
+  fontWeight: 600,
+  color: '#c9a96e',
+  margin: '0 0 16px 0',
 }
 
 export default function EditCustomerPage() {
@@ -105,114 +139,118 @@ export default function EditCustomerPage() {
   const totalInvoiced = invoices.reduce((s, inv) => s + inv.total, 0)
 
   if (loading) {
-    return <div className="p-8 text-gray-500">Lade Kundendaten...</div>
+    return (
+      <div style={{ padding: '40px', fontFamily: '"DM Sans", system-ui, sans-serif', color: '#8a8580', background: '#111111', minHeight: '100vh' }}>
+        Lade Kundendaten...
+      </div>
+    )
   }
 
   if (error && !form.name) {
     return (
-      <div className="p-8">
-        <div className="text-red-600">{error}</div>
-        <button onClick={() => router.back()} className="mt-4 text-blue-600 hover:underline text-sm">← Zurück</button>
+      <div style={{ padding: '40px', fontFamily: '"DM Sans", system-ui, sans-serif', background: '#111111', minHeight: '100vh' }}>
+        <div style={{ color: '#e07060', fontSize: 13 }}>{error}</div>
+        <button onClick={() => router.back()} style={{ marginTop: 16, background: 'transparent', border: 'none', color: '#c9a96e', fontSize: 13, cursor: 'pointer', padding: 0 }}>← Zurück</button>
       </div>
     )
   }
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.push('/customers')} className="text-gray-400 hover:text-gray-600 text-sm">← Zurück</button>
-        <h1 className="text-2xl font-bold text-gray-900">{form.name || 'Kunde bearbeiten'}</h1>
+    <div style={{ padding: '32px', maxWidth: 760, margin: '0 auto', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <button onClick={() => router.push('/customers')} style={{ background: 'transparent', border: 'none', color: '#8a8580', fontSize: 13, cursor: 'pointer', padding: 0 }}>← Zurück</button>
+        <h1 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 24, fontWeight: 700, color: '#c9a96e', margin: 0 }}>
+          {form.name || 'Kunde bearbeiten'}
+        </h1>
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+        <div style={{ marginBottom: 16, background: 'rgba(192,57,43,0.1)', border: '1px solid rgba(192,57,43,0.3)', color: '#e07060', borderRadius: 3, padding: '10px 16px', fontSize: 13 }}>
           {error}
         </div>
       )}
 
       {/* Quick Actions */}
-      <div className="mb-6 flex gap-3">
+      <div style={{ marginBottom: 24 }}>
         <Link
           href={`/invoices/new?customer_id=${id}`}
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+          style={{ display: 'inline-block', padding: '8px 18px', background: '#c9a96e', color: '#111111', fontSize: 13, fontWeight: 600, borderRadius: 3, textDecoration: 'none' }}
         >
           + Neue Rechnung für diesen Kunden
         </Link>
       </div>
 
       <form onSubmit={handleSave}>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100 mb-8">
-          <div className="p-6">
-            <h2 className="font-semibold text-gray-800 mb-4">Firmendaten</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Firmenname / Name *</label>
+        <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3, marginBottom: 24 }}>
+          <div style={sectionStyle}>
+            <h2 style={sectionHeadingStyle}>Firmendaten</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Firmenname / Name *</label>
                 <input type="text" value={form.name} onChange={e => update('name', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Ansprechpartner</label>
+                <label style={labelStyle}>Ansprechpartner</label>
                 <input type="text" value={form.contact_name} onChange={e => update('contact_name', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">E-Mail</label>
+                <label style={labelStyle}>E-Mail</label>
                 <input type="email" value={form.email} onChange={e => update('email', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Straße + Hausnummer</label>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Straße + Hausnummer</label>
                 <input type="text" value={form.address} onChange={e => update('address', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">PLZ</label>
+                <label style={labelStyle}>PLZ</label>
                 <input type="text" value={form.postal_code} onChange={e => update('postal_code', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Ort</label>
+                <label style={labelStyle}>Ort</label>
                 <input type="text" value={form.city} onChange={e => update('city', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Land</label>
+                <label style={labelStyle}>Land</label>
                 <input type="text" value={form.country} onChange={e => update('country', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">USt-IdNr. (Kunde)</label>
+                <label style={labelStyle}>USt-IdNr. (Kunde)</label>
                 <input type="text" value={form.tax_id} onChange={e => update('tax_id', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
             </div>
           </div>
 
-          <div className="p-6">
-            <h2 className="font-semibold text-gray-800 mb-4">Standard-Leistung</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Standard-Leistungsbeschreibung</label>
+          <div style={sectionStyle}>
+            <h2 style={sectionHeadingStyle}>Standard-Leistung</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Standard-Leistungsbeschreibung</label>
                 <input type="text" value={form.default_service} onChange={e => update('default_service', e.target.value)}
-                  placeholder="z.B. Social Media Management – Instagram & Facebook"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="z.B. Social Media Management – Instagram & Facebook" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Standard-Betrag (€)</label>
+                <label style={labelStyle}>Standard-Betrag (€)</label>
                 <input type="number" value={form.default_amount} onChange={e => update('default_amount', e.target.value)}
-                  step="0.01" min="0"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  step="0.01" min="0" style={inputStyle} />
               </div>
             </div>
           </div>
 
-          <div className="p-6 flex gap-3 justify-end">
+          <div style={{ padding: '20px 24px', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <button type="button" onClick={() => router.push('/customers')}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600">
+              style={{ padding: '8px 18px', fontSize: 13, background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', borderRadius: 3, cursor: 'pointer' }}>
               Abbrechen
             </button>
             <button type="submit" disabled={saving}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              style={{ padding: '8px 18px', fontSize: 13, background: '#c9a96e', color: '#111111', borderRadius: 3, border: 'none', cursor: 'pointer', fontWeight: 600, opacity: saving ? 0.5 : 1 }}>
               {saving ? 'Speichern...' : 'Änderungen speichern'}
             </button>
           </div>
@@ -220,50 +258,48 @@ export default function EditCustomerPage() {
       </form>
 
       {/* Customer Invoices */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-800">
+      <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3 }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(201,169,110,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 15, fontWeight: 600, color: '#c9a96e', margin: 0 }}>
             Rechnungen ({invoices.length})
           </h2>
           {invoices.length > 0 && (
-            <span className="text-sm text-gray-500">
-              Gesamt: <strong>{formatGermanCurrency(totalInvoiced)}</strong>
+            <span style={{ fontSize: 13, color: '#8a8580' }}>
+              Gesamt: <strong style={{ color: '#c9a96e' }}>{formatGermanCurrency(totalInvoiced)}</strong>
             </span>
           )}
         </div>
         {invoices.length === 0 ? (
-          <div className="px-5 py-8 text-center text-gray-400 text-sm">
+          <div style={{ padding: '32px 20px', textAlign: 'center', color: '#8a8580', fontSize: 13 }}>
             Noch keine Rechnungen für diesen Kunden.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide border-b border-gray-200">
-                  <th className="px-5 py-3 text-left font-medium">Rechnungsnr.</th>
-                  <th className="px-5 py-3 text-left font-medium">Datum</th>
-                  <th className="px-5 py-3 text-left font-medium">Leistungszeitraum</th>
-                  <th className="px-5 py-3 text-right font-medium">Betrag</th>
-                  <th className="px-5 py-3 text-center font-medium">Status</th>
+                <tr style={{ background: 'rgba(201,169,110,0.05)', borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Rechnungsnr.</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Datum</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Leistungszeitraum</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'right', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Betrag</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'center', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.map((inv) => (
-                  <tr key={inv.id} className="border-t border-gray-100 hover:bg-gray-50">
-                    <td className="px-5 py-3">
-                      <Link href={`/invoices/${inv.id}`} className="font-mono text-blue-600 hover:underline text-xs">
+                  <tr key={inv.id} style={{ borderTop: '1px solid rgba(201,169,110,0.08)' }}>
+                    <td style={{ padding: '12px 20px' }}>
+                      <Link href={`/invoices/${inv.id}`} style={{ fontFamily: 'monospace', color: '#c9a96e', textDecoration: 'none', fontSize: 12 }}>
                         {inv.invoice_number}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-gray-500">{formatGermanDate(inv.date)}</td>
-                    <td className="px-5 py-3 text-gray-500">{inv.service_period || '—'}</td>
-                    <td className="px-5 py-3 text-right font-semibold text-gray-800">
+                    <td style={{ padding: '12px 20px', color: '#8a8580' }}>{formatGermanDate(inv.date)}</td>
+                    <td style={{ padding: '12px 20px', color: '#8a8580' }}>{inv.service_period || '—'}</td>
+                    <td style={{ padding: '12px 20px', textAlign: 'right', fontWeight: 600, color: '#f5f2ee', fontFamily: 'monospace' }}>
                       {formatGermanCurrency(inv.total)}
                     </td>
-                    <td className="px-5 py-3 text-center">
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor(inv.status)}`}>
-                        {inv.status}
-                      </span>
+                    <td style={{ padding: '12px 20px', textAlign: 'center' }}>
+                      <span style={statusStyle(inv.status)}>{inv.status}</span>
                     </td>
                   </tr>
                 ))}

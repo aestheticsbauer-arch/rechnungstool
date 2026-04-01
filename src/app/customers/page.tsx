@@ -6,6 +6,19 @@ import { useRouter } from 'next/navigation'
 import { formatGermanCurrency } from '@/lib/utils'
 import type { Customer } from '@/lib/types'
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: '#1e1e1e',
+  border: '1px solid rgba(201,169,110,0.3)',
+  color: '#f5f2ee',
+  borderRadius: 3,
+  padding: '8px 12px',
+  fontSize: 13,
+  outline: 'none',
+  fontFamily: '"DM Sans", system-ui, sans-serif',
+  boxSizing: 'border-box',
+}
+
 export default function CustomersPage() {
   const router = useRouter()
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -41,96 +54,98 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Kunden</h1>
+    <div style={{ padding: '32px', maxWidth: 1100, margin: '0 auto', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <h1 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 28, fontWeight: 700, color: '#c9a96e', margin: 0 }}>
+          Kunden
+        </h1>
         <Link
           href="/customers/new"
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          style={{ padding: '8px 18px', background: '#c9a96e', color: '#111111', fontSize: 13, fontWeight: 600, borderRadius: 3, textDecoration: 'none', letterSpacing: '0.02em' }}
         >
           + Neuer Kunde
         </Link>
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+      <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3, padding: '16px 20px', marginBottom: 20 }}>
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Kunden suchen (Name, Ort, E-Mail)..."
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={inputStyle}
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3, overflow: 'hidden' }}>
         {loading ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">Lade Kunden...</div>
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: '#8a8580', fontSize: 13 }}>Lade Kunden...</div>
         ) : filtered.length === 0 ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: '#8a8580', fontSize: 13 }}>
             {search ? 'Keine Kunden gefunden.' : (
               <>
                 Noch keine Kunden vorhanden.{' '}
-                <Link href="/customers/new" className="text-blue-600 hover:underline">
+                <Link href="/customers/new" style={{ color: '#c9a96e', textDecoration: 'none' }}>
                   Ersten Kunden anlegen
                 </Link>
               </>
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide border-b border-gray-200">
-                  <th className="px-5 py-3 text-left font-medium">Name</th>
-                  <th className="px-5 py-3 text-left font-medium">Kontakt</th>
-                  <th className="px-5 py-3 text-left font-medium">Ort</th>
-                  <th className="px-5 py-3 text-left font-medium">E-Mail</th>
-                  <th className="px-5 py-3 text-left font-medium">Standard-Leistung</th>
-                  <th className="px-5 py-3 text-right font-medium">Std.-Betrag</th>
-                  <th className="px-5 py-3 text-right font-medium">Aktionen</th>
+                <tr style={{ background: 'rgba(201,169,110,0.05)', borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Name</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Kontakt</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Ort</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>E-Mail</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Standard-Leistung</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'right', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Std.-Betrag</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'right', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Aktionen</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((customer) => (
-                  <tr key={customer.id} className="border-t border-gray-100 hover:bg-gray-50">
-                    <td className="px-5 py-3 font-medium text-gray-900">{customer.name}</td>
-                    <td className="px-5 py-3 text-gray-500">{customer.contact_name || '—'}</td>
-                    <td className="px-5 py-3 text-gray-500">
+                  <tr key={customer.id} style={{ borderTop: '1px solid rgba(201,169,110,0.08)' }}>
+                    <td style={{ padding: '12px 20px', color: '#f5f2ee', fontWeight: 600 }}>{customer.name}</td>
+                    <td style={{ padding: '12px 20px', color: '#8a8580' }}>{customer.contact_name || '—'}</td>
+                    <td style={{ padding: '12px 20px', color: '#8a8580' }}>
                       {[customer.postal_code, customer.city].filter(Boolean).join(' ') || '—'}
                     </td>
-                    <td className="px-5 py-3 text-gray-500">
+                    <td style={{ padding: '12px 20px' }}>
                       {customer.email ? (
-                        <a href={`mailto:${customer.email}`} className="text-blue-600 hover:underline">
+                        <a href={`mailto:${customer.email}`} style={{ color: '#c9a96e', textDecoration: 'none' }}>
                           {customer.email}
                         </a>
-                      ) : '—'}
+                      ) : <span style={{ color: '#8a8580' }}>—</span>}
                     </td>
-                    <td className="px-5 py-3 text-gray-500 max-w-xs truncate">
+                    <td style={{ padding: '12px 20px', color: '#8a8580', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {customer.default_service || '—'}
                     </td>
-                    <td className="px-5 py-3 text-right text-gray-700 font-mono text-xs">
-                      {customer.default_amount > 0 ? formatGermanCurrency(customer.default_amount) : '—'}
+                    <td style={{ padding: '12px 20px', textAlign: 'right', color: '#f5f2ee', fontFamily: 'monospace', fontSize: 12 }}>
+                      {customer.default_amount > 0 ? formatGermanCurrency(customer.default_amount) : <span style={{ color: '#8a8580' }}>—</span>}
                     </td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center justify-end gap-2">
+                    <td style={{ padding: '12px 20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
                         <button
                           onClick={() => router.push(`/invoices/new?customer_id=${customer.id}`)}
-                          className="text-xs text-green-600 hover:text-green-800 hover:bg-green-50 px-2 py-1 rounded transition-colors whitespace-nowrap"
+                          style={{ fontSize: 12, color: '#4ade80', background: 'transparent', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 3, padding: '3px 8px', cursor: 'pointer', whiteSpace: 'nowrap' }}
                         >
                           Neue Rechnung
                         </button>
                         <button
                           onClick={() => router.push(`/customers/${customer.id}`)}
-                          className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+                          style={{ fontSize: 12, color: '#c9a96e', background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', borderRadius: 3, padding: '3px 8px', cursor: 'pointer' }}
                         >
                           Bearbeiten
                         </button>
                         <button
                           onClick={() => handleDelete(customer.id, customer.name)}
                           disabled={deleting === customer.id}
-                          className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                          style={{ fontSize: 12, color: '#c0392b', background: 'transparent', border: '1px solid rgba(192,57,43,0.3)', borderRadius: 3, padding: '3px 8px', cursor: 'pointer', opacity: deleting === customer.id ? 0.5 : 1 }}
                         >
                           Löschen
                         </button>

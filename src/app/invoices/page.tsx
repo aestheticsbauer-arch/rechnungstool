@@ -8,10 +8,20 @@ import type { Invoice } from '@/lib/types'
 
 const STATUS_OPTIONS = ['', 'Entwurf', 'Versendet', 'Bezahlt']
 
-const statusColor = (status: string) => {
-  if (status === 'Bezahlt') return 'bg-green-100 text-green-800'
-  if (status === 'Versendet') return 'bg-blue-100 text-blue-800'
-  return 'bg-gray-100 text-gray-700'
+const statusStyle = (status: string): React.CSSProperties => {
+  if (status === 'Bezahlt') return { background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 3, padding: '2px 8px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+  if (status === 'Versendet') return { background: 'rgba(201,169,110,0.15)', color: '#c9a96e', border: '1px solid rgba(201,169,110,0.3)', borderRadius: 3, padding: '2px 8px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+  return { background: 'rgba(138,133,128,0.15)', color: '#8a8580', border: '1px solid rgba(138,133,128,0.3)', borderRadius: 3, padding: '2px 8px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+}
+
+const inputStyle: React.CSSProperties = {
+  background: '#1e1e1e',
+  border: '1px solid rgba(201,169,110,0.3)',
+  color: '#f5f2ee',
+  borderRadius: 3,
+  padding: '6px 12px',
+  fontSize: 13,
+  outline: 'none',
 }
 
 export default function InvoicesPage() {
@@ -61,25 +71,27 @@ export default function InvoicesPage() {
   const totalAmount = invoices.reduce((s, inv) => s + inv.total, 0)
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Rechnungen</h1>
+    <div style={{ padding: '32px', maxWidth: 1100, margin: '0 auto', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <h1 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 28, fontWeight: 700, color: '#c9a96e', margin: 0 }}>
+          Rechnungen
+        </h1>
         <Link
           href="/invoices/new"
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          style={{ padding: '8px 18px', background: '#c9a96e', color: '#111111', fontSize: 13, fontWeight: 600, borderRadius: 3, textDecoration: 'none', letterSpacing: '0.02em' }}
         >
           + Neue Rechnung
         </Link>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex flex-wrap gap-4 items-center">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 font-medium">Jahr:</label>
+      <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3, padding: '16px 20px', marginBottom: 20, display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label style={{ fontSize: 13, color: '#8a8580', fontWeight: 500 }}>Jahr:</label>
           <select
             value={yearFilter}
             onChange={e => setYearFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={inputStyle}
           >
             <option value="">Alle Jahre</option>
             {years.map(y => (
@@ -87,12 +99,12 @@ export default function InvoicesPage() {
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 font-medium">Status:</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <label style={{ fontSize: 13, color: '#8a8580', fontWeight: 500 }}>Status:</label>
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={inputStyle}
           >
             {STATUS_OPTIONS.map(s => (
               <option key={s} value={s}>{s || 'Alle Status'}</option>
@@ -100,73 +112,71 @@ export default function InvoicesPage() {
           </select>
         </div>
         {invoices.length > 0 && (
-          <div className="ml-auto text-sm text-gray-500">
-            {invoices.length} Rechnung(en) · Gesamt: <strong>{formatGermanCurrency(totalAmount)}</strong>
+          <div style={{ marginLeft: 'auto', fontSize: 13, color: '#8a8580' }}>
+            {invoices.length} Rechnung(en) · Gesamt: <strong style={{ color: '#c9a96e' }}>{formatGermanCurrency(totalAmount)}</strong>
           </div>
         )}
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3, overflow: 'hidden' }}>
         {loading ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">Lade Rechnungen...</div>
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: '#8a8580', fontSize: 13 }}>Lade Rechnungen...</div>
         ) : invoices.length === 0 ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: '#8a8580', fontSize: 13 }}>
             Keine Rechnungen gefunden.{' '}
-            <Link href="/invoices/new" className="text-blue-600 hover:underline">
+            <Link href="/invoices/new" style={{ color: '#c9a96e', textDecoration: 'none' }}>
               Neue Rechnung erstellen
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide border-b border-gray-200">
-                  <th className="px-5 py-3 text-left font-medium">Rechnungsnr.</th>
-                  <th className="px-5 py-3 text-left font-medium">Kunde</th>
-                  <th className="px-5 py-3 text-left font-medium">Datum</th>
-                  <th className="px-5 py-3 text-left font-medium">Leistungszeitraum</th>
-                  <th className="px-5 py-3 text-right font-medium">Betrag</th>
-                  <th className="px-5 py-3 text-center font-medium">Status</th>
-                  <th className="px-5 py-3 text-right font-medium">Aktionen</th>
+                <tr style={{ background: 'rgba(201,169,110,0.05)', borderBottom: '1px solid rgba(201,169,110,0.15)' }}>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Rechnungsnr.</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Kunde</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Datum</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'left', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Leistungszeitraum</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'right', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Betrag</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'center', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Status</th>
+                  <th style={{ padding: '10px 20px', textAlign: 'right', fontWeight: 600, fontSize: 11, color: '#8a8580', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Aktionen</th>
                 </tr>
               </thead>
               <tbody>
                 {invoices.map((inv) => (
-                  <tr key={inv.id} className="border-t border-gray-100 hover:bg-gray-50">
-                    <td className="px-5 py-3 font-mono text-gray-700 text-xs">{inv.invoice_number}</td>
-                    <td className="px-5 py-3 text-gray-800 font-medium">
+                  <tr key={inv.id} style={{ borderTop: '1px solid rgba(201,169,110,0.08)' }}>
+                    <td style={{ padding: '12px 20px', fontFamily: 'monospace', color: '#8a8580', fontSize: 12 }}>{inv.invoice_number}</td>
+                    <td style={{ padding: '12px 20px', color: '#f5f2ee', fontWeight: 500 }}>
                       {inv.customer_name || inv.customer_snapshot?.name || '—'}
                     </td>
-                    <td className="px-5 py-3 text-gray-500">{formatGermanDate(inv.date)}</td>
-                    <td className="px-5 py-3 text-gray-500">{inv.service_period || '—'}</td>
-                    <td className="px-5 py-3 text-right font-semibold text-gray-800">
+                    <td style={{ padding: '12px 20px', color: '#8a8580' }}>{formatGermanDate(inv.date)}</td>
+                    <td style={{ padding: '12px 20px', color: '#8a8580' }}>{inv.service_period || '—'}</td>
+                    <td style={{ padding: '12px 20px', textAlign: 'right', fontWeight: 600, color: '#f5f2ee', fontFamily: 'monospace' }}>
                       {formatGermanCurrency(inv.total)}
                     </td>
-                    <td className="px-5 py-3 text-center">
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusColor(inv.status)}`}>
-                        {inv.status}
-                      </span>
+                    <td style={{ padding: '12px 20px', textAlign: 'center' }}>
+                      <span style={statusStyle(inv.status)}>{inv.status}</span>
                     </td>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center justify-end gap-2">
+                    <td style={{ padding: '12px 20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
                         <button
                           onClick={() => window.open(`/invoices/${inv.id}/print`, '_blank')}
-                          className="text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2 py-1 rounded transition-colors"
+                          style={{ fontSize: 12, color: '#8a8580', background: 'transparent', border: '1px solid rgba(138,133,128,0.3)', borderRadius: 3, padding: '3px 8px', cursor: 'pointer' }}
                           title="PDF anzeigen"
                         >
                           PDF
                         </button>
                         <button
                           onClick={() => router.push(`/invoices/${inv.id}`)}
-                          className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+                          style={{ fontSize: 12, color: '#c9a96e', background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', borderRadius: 3, padding: '3px 8px', cursor: 'pointer' }}
                         >
                           Bearbeiten
                         </button>
                         <button
                           onClick={() => handleDelete(inv.id, inv.invoice_number)}
                           disabled={deleting === inv.id}
-                          className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors disabled:opacity-50"
+                          style={{ fontSize: 12, color: '#c0392b', background: 'transparent', border: '1px solid rgba(192,57,43,0.3)', borderRadius: 3, padding: '3px 8px', cursor: 'pointer', opacity: deleting === inv.id ? 0.5 : 1 }}
                         >
                           Löschen
                         </button>

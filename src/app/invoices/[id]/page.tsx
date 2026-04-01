@@ -10,10 +10,31 @@ interface InvoiceItem {
   amount: string
 }
 
-const statusColor = (status: string) => {
-  if (status === 'Bezahlt') return 'bg-green-100 text-green-800'
-  if (status === 'Versendet') return 'bg-blue-100 text-blue-800'
-  return 'bg-gray-100 text-gray-700'
+const statusStyle = (status: string): React.CSSProperties => {
+  if (status === 'Bezahlt') return { background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 3, padding: '2px 10px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+  if (status === 'Versendet') return { background: 'rgba(201,169,110,0.15)', color: '#c9a96e', border: '1px solid rgba(201,169,110,0.3)', borderRadius: 3, padding: '2px 10px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+  return { background: 'rgba(138,133,128,0.15)', color: '#8a8580', border: '1px solid rgba(138,133,128,0.3)', borderRadius: 3, padding: '2px 10px', fontSize: 11, fontWeight: 600, display: 'inline-block' }
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: '#1e1e1e',
+  border: '1px solid rgba(201,169,110,0.3)',
+  color: '#f5f2ee',
+  borderRadius: 3,
+  padding: '8px 12px',
+  fontSize: 13,
+  outline: 'none',
+  fontFamily: '"DM Sans", system-ui, sans-serif',
+  boxSizing: 'border-box',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  color: '#8a8580',
+  marginBottom: 4,
+  fontWeight: 500,
 }
 
 export default function InvoiceDetailPage() {
@@ -172,56 +193,73 @@ export default function InvoiceDetailPage() {
   }
 
   if (loading) {
-    return <div className="p-8 text-gray-500">Lade Rechnung...</div>
+    return (
+      <div style={{ padding: '40px', fontFamily: '"DM Sans", system-ui, sans-serif', color: '#8a8580', background: '#111111', minHeight: '100vh' }}>
+        Lade Rechnung...
+      </div>
+    )
   }
 
   if (error && !invoice) {
     return (
-      <div className="p-8">
-        <div className="text-red-600">{error}</div>
-        <button onClick={() => router.back()} className="mt-4 text-blue-600 hover:underline text-sm">← Zurück</button>
+      <div style={{ padding: '40px', fontFamily: '"DM Sans", system-ui, sans-serif', background: '#111111', minHeight: '100vh' }}>
+        <div style={{ color: '#e07060', fontSize: 13 }}>{error}</div>
+        <button onClick={() => router.back()} style={{ marginTop: 16, background: 'transparent', border: 'none', color: '#c9a96e', fontSize: 13, cursor: 'pointer', padding: 0 }}>← Zurück</button>
       </div>
     )
   }
 
   if (!invoice) return null
 
+  const sectionStyle: React.CSSProperties = {
+    padding: '24px',
+    borderBottom: '1px solid rgba(201,169,110,0.1)',
+  }
+
+  const sectionHeadingStyle: React.CSSProperties = {
+    fontFamily: '"Playfair Display", Georgia, serif',
+    fontSize: 15,
+    fontWeight: 600,
+    color: '#c9a96e',
+    marginBottom: 16,
+    margin: '0 0 16px 0',
+  }
+
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.push('/invoices')} className="text-gray-400 hover:text-gray-600 text-sm">← Zurück</button>
-        <h1 className="text-2xl font-bold text-gray-900">Rechnung {invoice.invoice_number}</h1>
-        <span className={`ml-2 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor(invoice.status)}`}>
-          {invoice.status}
-        </span>
+    <div style={{ padding: '32px', maxWidth: 720, margin: '0 auto', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <button onClick={() => router.push('/invoices')} style={{ background: 'transparent', border: 'none', color: '#8a8580', fontSize: 13, cursor: 'pointer', padding: 0 }}>← Zurück</button>
+        <h1 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 24, fontWeight: 700, color: '#c9a96e', margin: 0 }}>
+          Rechnung {invoice.invoice_number}
+        </h1>
+        <span style={statusStyle(invoice.status)}>{invoice.status}</span>
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+        <div style={{ marginBottom: 16, background: 'rgba(192,57,43,0.1)', border: '1px solid rgba(192,57,43,0.3)', color: '#e07060', borderRadius: 3, padding: '10px 16px', fontSize: 13 }}>
           {error}
         </div>
       )}
 
       {/* Action Bar */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
         <button
           onClick={() => window.open(`/invoices/${id}/print`, '_blank')}
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+          style={{ padding: '8px 16px', background: '#c9a96e', color: '#111111', fontSize: 13, fontWeight: 600, borderRadius: 3, border: 'none', cursor: 'pointer' }}
         >
           Als PDF speichern / Drucken
         </button>
         <button
           onClick={() => setEditing(!editing)}
-          className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 text-gray-600"
+          style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', fontSize: 13, borderRadius: 3, cursor: 'pointer' }}
         >
           {editing ? 'Abbrechen' : 'Bearbeiten'}
         </button>
 
-        {/* Status Buttons */}
         {invoice.status === 'Entwurf' && (
           <button
             onClick={() => handleStatusUpdate('Versendet')}
-            className="px-4 py-2 border border-blue-500 text-blue-600 text-sm font-medium rounded-lg hover:bg-blue-50"
+            style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', fontSize: 13, borderRadius: 3, cursor: 'pointer' }}
           >
             Als versendet markieren
           </button>
@@ -229,7 +267,7 @@ export default function InvoiceDetailPage() {
         {invoice.status === 'Versendet' && (
           <button
             onClick={() => handleStatusUpdate('Bezahlt')}
-            className="px-4 py-2 border border-green-500 text-green-600 text-sm font-medium rounded-lg hover:bg-green-50"
+            style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80', fontSize: 13, borderRadius: 3, cursor: 'pointer' }}
           >
             Als bezahlt markieren
           </button>
@@ -237,7 +275,7 @@ export default function InvoiceDetailPage() {
 
         <button
           onClick={handleDelete}
-          className="px-4 py-2 border border-red-300 text-red-500 text-sm font-medium rounded-lg hover:bg-red-50 ml-auto"
+          style={{ padding: '8px 16px', background: 'transparent', border: '1px solid rgba(192,57,43,0.3)', color: '#c0392b', fontSize: 13, borderRadius: 3, cursor: 'pointer', marginLeft: 'auto' }}
         >
           Löschen
         </button>
@@ -245,153 +283,153 @@ export default function InvoiceDetailPage() {
 
       {!editing ? (
         /* View mode */
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100">
-          <div className="p-6 grid grid-cols-2 gap-4">
+        <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3 }}>
+          <div style={{ ...sectionStyle, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Rechnungsnummer</p>
-              <p className="font-mono text-gray-800">{invoice.invoice_number}</p>
+              <p style={{ fontSize: 11, color: '#8a8580', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Rechnungsnummer</p>
+              <p style={{ fontFamily: 'monospace', color: '#f5f2ee', fontSize: 13 }}>{invoice.invoice_number}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Datum</p>
-              <p className="text-gray-800">{formatGermanDate(invoice.date)}</p>
+              <p style={{ fontSize: 11, color: '#8a8580', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Datum</p>
+              <p style={{ color: '#f5f2ee', fontSize: 13 }}>{formatGermanDate(invoice.date)}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Leistungszeitraum</p>
-              <p className="text-gray-800">{invoice.service_period || '—'}</p>
+              <p style={{ fontSize: 11, color: '#8a8580', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Leistungszeitraum</p>
+              <p style={{ color: '#f5f2ee', fontSize: 13 }}>{invoice.service_period || '—'}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Kunde</p>
-              <p className="text-gray-800 font-medium">
+              <p style={{ fontSize: 11, color: '#8a8580', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kunde</p>
+              <p style={{ color: '#f5f2ee', fontSize: 13, fontWeight: 600 }}>
                 {invoice.customer_name || invoice.customer_snapshot?.name || '—'}
               </p>
             </div>
           </div>
-          <div className="p-6">
-            <p className="text-xs text-gray-500 mb-3">Positionen</p>
-            <div className="space-y-2">
+          <div style={sectionStyle}>
+            <p style={{ fontSize: 11, color: '#8a8580', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Positionen</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {invoice.items.map((item, i) => (
-                <div key={i} className="flex justify-between text-sm">
-                  <span className="text-gray-700">{item.description}</span>
-                  <span className="font-mono text-gray-800">{formatCurrency(item.amount)}</span>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                  <span style={{ color: '#f5f2ee' }}>{item.description}</span>
+                  <span style={{ fontFamily: 'monospace', color: '#c9a96e' }}>{formatCurrency(item.amount)}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-4 pt-3 border-t border-gray-100 space-y-1">
-              <div className="flex justify-between text-sm text-gray-600">
+            <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid rgba(201,169,110,0.1)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8a8580' }}>
                 <span>Nettobetrag</span>
-                <span className="font-mono">{formatCurrency(invoice.subtotal)}</span>
+                <span style={{ fontFamily: 'monospace' }}>{formatCurrency(invoice.subtotal)}</span>
               </div>
               {invoice.tax_rate > 0 && (
-                <div className="flex justify-between text-sm text-gray-600">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8a8580' }}>
                   <span>MwSt. ({invoice.tax_rate}%)</span>
-                  <span className="font-mono">{formatCurrency(invoice.tax_amount)}</span>
+                  <span style={{ fontFamily: 'monospace' }}>{formatCurrency(invoice.tax_amount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-base font-bold text-gray-900">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 700, color: '#f5f2ee' }}>
                 <span>Gesamtbetrag</span>
-                <span className="font-mono">{formatCurrency(invoice.total)}</span>
+                <span style={{ fontFamily: 'monospace', color: '#c9a96e' }}>{formatCurrency(invoice.total)}</span>
               </div>
             </div>
           </div>
           {invoice.notes && (
-            <div className="p-6">
-              <p className="text-xs text-gray-500 mb-1">Notizen</p>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">{invoice.notes}</p>
+            <div style={sectionStyle}>
+              <p style={{ fontSize: 11, color: '#8a8580', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Notizen</p>
+              <p style={{ fontSize: 13, color: '#f5f2ee', whiteSpace: 'pre-wrap' }}>{invoice.notes}</p>
             </div>
           )}
         </div>
       ) : (
         /* Edit mode */
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100">
-          <div className="p-6">
-            <h2 className="font-semibold text-gray-800 mb-4">Rechnungsdetails</h2>
-            <div className="grid grid-cols-2 gap-4">
+        <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3 }}>
+          <div style={sectionStyle}>
+            <h2 style={sectionHeadingStyle}>Rechnungsdetails</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Rechnungsnummer *</label>
+                <label style={labelStyle}>Rechnungsnummer *</label>
                 <input type="text" value={invoiceNumber} onChange={e => setInvoiceNumber(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={{ ...inputStyle, fontFamily: 'monospace' }} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Datum</label>
+                <label style={labelStyle}>Datum</label>
                 <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Leistungszeitraum</label>
+                <label style={labelStyle}>Leistungszeitraum</label>
                 <input type="text" value={servicePeriod} onChange={e => setServicePeriod(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Status</label>
+                <label style={labelStyle}>Status</label>
                 <select value={status} onChange={e => setStatus(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  style={inputStyle}>
                   <option value="Entwurf">Entwurf</option>
                   <option value="Versendet">Versendet</option>
                   <option value="Bezahlt">Bezahlt</option>
                 </select>
               </div>
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-600 mb-1 font-medium">Kunde</label>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>Kunde</label>
                 <select value={customerId} onChange={e => setCustomerId(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  style={inputStyle}>
                   <option value="">— Kein Kunde —</option>
                   {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
             </div>
           </div>
-          <div className="p-6">
-            <h2 className="font-semibold text-gray-800 mb-4">Positionen</h2>
-            <div className="space-y-2">
+          <div style={sectionStyle}>
+            <h2 style={sectionHeadingStyle}>Positionen</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {items.map((item, index) => (
-                <div key={index} className="flex gap-2">
+                <div key={index} style={{ display: 'flex', gap: 8 }}>
                   <input type="text" value={item.description} onChange={e => updateItem(index, 'description', e.target.value)}
                     placeholder="Beschreibung"
-                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    style={{ ...inputStyle, flex: 1 }} />
                   <input type="number" value={item.amount} onChange={e => updateItem(index, 'amount', e.target.value)}
-                    step="0.01" className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    step="0.01" style={{ ...inputStyle, width: 120, textAlign: 'right', fontFamily: 'monospace' }} />
                   {items.length > 1 && (
                     <button onClick={() => setItems(p => p.filter((_, i) => i !== index))}
-                      className="px-2 text-red-400 hover:text-red-600">✕</button>
+                      style={{ padding: '8px 10px', background: 'transparent', border: '1px solid rgba(192,57,43,0.3)', color: '#c0392b', borderRadius: 3, cursor: 'pointer' }}>✕</button>
                   )}
                 </div>
               ))}
             </div>
             <button onClick={() => setItems(p => [...p, { description: '', amount: '' }])}
-              className="mt-3 text-sm text-blue-600 hover:text-blue-800">
+              style={{ marginTop: 12, background: 'transparent', border: 'none', color: '#c9a96e', fontSize: 13, cursor: 'pointer', padding: 0 }}>
               + Position hinzufügen
             </button>
           </div>
-          <div className="p-6">
-            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
+          <div style={sectionStyle}>
+            <div style={{ background: '#111111', borderRadius: 3, border: '1px solid rgba(201,169,110,0.1)', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8a8580' }}>
                 <span>Nettobetrag</span>
-                <span className="font-mono">{formatCurrency(subtotal)}</span>
+                <span style={{ fontFamily: 'monospace' }}>{formatCurrency(subtotal)}</span>
               </div>
               {!isKleinunternehmer && (
-                <div className="flex justify-between text-sm text-gray-600">
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8a8580' }}>
                   <span>MwSt. (19%)</span>
-                  <span className="font-mono">{formatCurrency(taxAmount)}</span>
+                  <span style={{ fontFamily: 'monospace' }}>{formatCurrency(taxAmount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-base font-bold text-gray-900 pt-2 border-t border-gray-200">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 700, color: '#f5f2ee', paddingTop: 8, borderTop: '1px solid rgba(201,169,110,0.15)' }}>
                 <span>Gesamt</span>
-                <span className="font-mono">{formatCurrency(total)}</span>
+                <span style={{ fontFamily: 'monospace', color: '#c9a96e' }}>{formatCurrency(total)}</span>
               </div>
             </div>
           </div>
-          <div className="p-6">
-            <label className="block text-sm text-gray-600 mb-1 font-medium">Notizen</label>
+          <div style={sectionStyle}>
+            <label style={labelStyle}>Notizen</label>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              style={{ ...inputStyle, resize: 'vertical' }} />
           </div>
-          <div className="p-6 flex gap-3 justify-end">
+          <div style={{ padding: '20px 24px', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <button onClick={() => setEditing(false)}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600">
+              style={{ padding: '8px 18px', fontSize: 13, background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', borderRadius: 3, cursor: 'pointer' }}>
               Abbrechen
             </button>
             <button onClick={handleSave} disabled={saving}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              style={{ padding: '8px 18px', fontSize: 13, background: '#c9a96e', color: '#111111', borderRadius: 3, border: 'none', cursor: 'pointer', fontWeight: 600, opacity: saving ? 0.5 : 1 }}>
               {saving ? 'Speichern...' : 'Änderungen speichern'}
             </button>
           </div>

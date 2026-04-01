@@ -10,6 +10,40 @@ interface InvoiceItem {
   amount: string
 }
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: '#1e1e1e',
+  border: '1px solid rgba(201,169,110,0.3)',
+  color: '#f5f2ee',
+  borderRadius: 3,
+  padding: '8px 12px',
+  fontSize: 13,
+  outline: 'none',
+  fontFamily: '"DM Sans", system-ui, sans-serif',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  color: '#8a8580',
+  marginBottom: 4,
+  fontWeight: 500,
+}
+
+const sectionStyle: React.CSSProperties = {
+  padding: '24px',
+  borderBottom: '1px solid rgba(201,169,110,0.1)',
+}
+
+const sectionHeadingStyle: React.CSSProperties = {
+  fontFamily: '"Playfair Display", Georgia, serif',
+  fontSize: 15,
+  fontWeight: 600,
+  color: '#c9a96e',
+  marginBottom: 16,
+  margin: '0 0 16px 0',
+}
+
 function NewInvoiceContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -190,35 +224,46 @@ function NewInvoiceContent() {
   }
 
   if (loading) {
-    return <div className="p-8 text-gray-500">Lade Formulardaten...</div>
+    return (
+      <div style={{ padding: '40px', fontFamily: '"DM Sans", system-ui, sans-serif', color: '#8a8580', background: '#111111', minHeight: '100vh' }}>
+        Lade Formulardaten...
+      </div>
+    )
   }
 
   const formatCurrency = (n: number) =>
     new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + ' €'
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} className="text-gray-400 hover:text-gray-600 text-sm">← Zurück</button>
-        <h1 className="text-2xl font-bold text-gray-900">Neue Rechnung</h1>
+    <div style={{ padding: '32px', maxWidth: 720, margin: '0 auto', fontFamily: '"DM Sans", system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <button
+          onClick={() => router.back()}
+          style={{ background: 'transparent', border: 'none', color: '#8a8580', fontSize: 13, cursor: 'pointer', padding: 0 }}
+        >
+          ← Zurück
+        </button>
+        <h1 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 26, fontWeight: 700, color: '#c9a96e', margin: 0 }}>
+          Neue Rechnung
+        </h1>
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+        <div style={{ marginBottom: 16, background: 'rgba(192,57,43,0.1)', border: '1px solid rgba(192,57,43,0.3)', color: '#e07060', borderRadius: 3, padding: '10px 16px', fontSize: 13 }}>
           {error}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100">
+      <div style={{ background: '#1a1a1a', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3 }}>
 
         {/* Customer Section */}
-        <div className="p-6">
-          <h2 className="font-semibold text-gray-800 mb-4">Kunde</h2>
-          <div className="flex gap-3">
+        <div style={sectionStyle}>
+          <h2 style={sectionHeadingStyle}>Kunde</h2>
+          <div style={{ display: 'flex', gap: 10 }}>
             <select
               value={customerId}
               onChange={e => handleCustomerChange(e.target.value)}
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ ...inputStyle, flex: 1 }}
             >
               <option value="">— Kunde auswählen —</option>
               {customers.map(c => (
@@ -228,7 +273,7 @@ function NewInvoiceContent() {
             <button
               type="button"
               onClick={() => setShowNewCustomer(!showNewCustomer)}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 whitespace-nowrap"
+              style={{ padding: '8px 14px', fontSize: 13, background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', borderRadius: 3, cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               {showNewCustomer ? '✕ Schließen' : '+ Neuer Kunde'}
             </button>
@@ -236,57 +281,57 @@ function NewInvoiceContent() {
 
           {/* Inline new customer form */}
           {showNewCustomer && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <h3 className="font-medium text-gray-700 mb-3 text-sm">Neuen Kunden anlegen</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2">
-                  <label className="block text-xs text-gray-500 mb-1">Firmenname *</label>
+            <div style={{ marginTop: 16, padding: 16, background: '#111111', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3 }}>
+              <h3 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontSize: 13, fontWeight: 600, color: '#c9a96e', marginBottom: 12, margin: '0 0 12px 0' }}>Neuen Kunden anlegen</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={labelStyle}>Firmenname *</label>
                   <input type="text" value={newCustomer.name} onChange={e => setNewCustomer(p => ({ ...p, name: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Musterfirma GmbH" />
+                    style={inputStyle} placeholder="Musterfirma GmbH" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Ansprechpartner</label>
+                  <label style={labelStyle}>Ansprechpartner</label>
                   <input type="text" value={newCustomer.contact_name} onChange={e => setNewCustomer(p => ({ ...p, contact_name: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">E-Mail</label>
+                  <label style={labelStyle}>E-Mail</label>
                   <input type="email" value={newCustomer.email} onChange={e => setNewCustomer(p => ({ ...p, email: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    style={inputStyle} />
                 </div>
-                <div className="col-span-2">
-                  <label className="block text-xs text-gray-500 mb-1">Straße + Hausnummer</label>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={labelStyle}>Straße + Hausnummer</label>
                   <input type="text" value={newCustomer.address} onChange={e => setNewCustomer(p => ({ ...p, address: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">PLZ</label>
+                  <label style={labelStyle}>PLZ</label>
                   <input type="text" value={newCustomer.postal_code} onChange={e => setNewCustomer(p => ({ ...p, postal_code: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Ort</label>
+                  <label style={labelStyle}>Ort</label>
                   <input type="text" value={newCustomer.city} onChange={e => setNewCustomer(p => ({ ...p, city: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    style={inputStyle} />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Standard-Leistung</label>
+                  <label style={labelStyle}>Standard-Leistung</label>
                   <input type="text" value={newCustomer.default_service} onChange={e => setNewCustomer(p => ({ ...p, default_service: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="z.B. Social Media Management" />
+                    style={inputStyle} placeholder="z.B. Social Media Management" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Standard-Betrag (€)</label>
+                  <label style={labelStyle}>Standard-Betrag (€)</label>
                   <input type="number" value={newCustomer.default_amount} onChange={e => setNewCustomer(p => ({ ...p, default_amount: e.target.value }))}
-                    className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01" />
+                    style={inputStyle} step="0.01" />
                 </div>
               </div>
-              <div className="mt-3 flex gap-2">
+              <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
                 <button onClick={handleSaveCustomer} disabled={savingCustomer}
-                  className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                  style={{ padding: '7px 16px', background: '#c9a96e', color: '#111111', fontSize: 13, fontWeight: 600, borderRadius: 3, border: 'none', cursor: 'pointer', opacity: savingCustomer ? 0.5 : 1 }}>
                   {savingCustomer ? 'Speichern...' : 'Kunde speichern'}
                 </button>
                 <button onClick={() => setShowNewCustomer(false)}
-                  className="px-3 py-1.5 border border-gray-300 text-sm rounded-lg hover:bg-gray-50 text-gray-600">
+                  style={{ padding: '7px 16px', background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', fontSize: 13, borderRadius: 3, cursor: 'pointer' }}>
                   Abbrechen
                 </button>
               </div>
@@ -295,43 +340,43 @@ function NewInvoiceContent() {
         </div>
 
         {/* Invoice Details */}
-        <div className="p-6">
-          <h2 className="font-semibold text-gray-800 mb-4">Rechnungsdetails</h2>
-          <div className="grid grid-cols-2 gap-4">
+        <div style={sectionStyle}>
+          <h2 style={sectionHeadingStyle}>Rechnungsdetails</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
-              <label className="block text-sm text-gray-600 mb-1 font-medium">Rechnungsnummer *</label>
+              <label style={labelStyle}>Rechnungsnummer *</label>
               <input
                 type="text"
                 value={invoiceNumber}
                 onChange={e => setInvoiceNumber(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ ...inputStyle, fontFamily: 'monospace' }}
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1 font-medium">Datum *</label>
+              <label style={labelStyle}>Datum *</label>
               <input
                 type="date"
                 value={date}
                 onChange={e => setDate(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={inputStyle}
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1 font-medium">Leistungszeitraum</label>
+              <label style={labelStyle}>Leistungszeitraum</label>
               <input
                 type="text"
                 value={servicePeriod}
                 onChange={e => setServicePeriod(e.target.value)}
                 placeholder="z.B. März 2025"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={inputStyle}
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1 font-medium">Status</label>
+              <label style={labelStyle}>Status</label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={inputStyle}
               >
                 <option value="Entwurf">Entwurf</option>
                 <option value="Versendet">Versendet</option>
@@ -342,17 +387,17 @@ function NewInvoiceContent() {
         </div>
 
         {/* Line Items */}
-        <div className="p-6">
-          <h2 className="font-semibold text-gray-800 mb-4">Leistungspositionen</h2>
-          <div className="space-y-2">
+        <div style={sectionStyle}>
+          <h2 style={sectionHeadingStyle}>Leistungspositionen</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {items.map((item, index) => (
-              <div key={index} className="flex gap-2 items-start">
+              <div key={index} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                 <input
                   type="text"
                   value={item.description}
                   onChange={e => updateItem(index, 'description', e.target.value)}
                   placeholder="Beschreibung der Leistung"
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ ...inputStyle, flex: 1 }}
                 />
                 <input
                   type="number"
@@ -360,12 +405,12 @@ function NewInvoiceContent() {
                   onChange={e => updateItem(index, 'amount', e.target.value)}
                   placeholder="Betrag"
                   step="0.01"
-                  className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
+                  style={{ ...inputStyle, width: 120, textAlign: 'right', fontFamily: 'monospace' }}
                 />
                 {items.length > 1 && (
                   <button
                     onClick={() => removeItem(index)}
-                    className="px-2.5 py-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    style={{ padding: '8px 10px', background: 'transparent', border: '1px solid rgba(192,57,43,0.3)', color: '#c0392b', borderRadius: 3, cursor: 'pointer', fontSize: 13 }}
                   >
                     ✕
                   </button>
@@ -375,75 +420,75 @@ function NewInvoiceContent() {
           </div>
           <button
             onClick={addItem}
-            className="mt-3 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            style={{ marginTop: 12, background: 'transparent', border: 'none', color: '#c9a96e', fontSize: 13, cursor: 'pointer', padding: 0 }}
           >
             + Position hinzufügen
           </button>
         </div>
 
         {/* Tax & Totals */}
-        <div className="p-6">
-          <h2 className="font-semibold text-gray-800 mb-4">Steuer & Gesamtbetrag</h2>
+        <div style={sectionStyle}>
+          <h2 style={sectionHeadingStyle}>Steuer & Gesamtbetrag</h2>
 
           {isKleinunternehmer ? (
-            <div className="text-sm text-gray-600 bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3 mb-4">
+            <div style={{ fontSize: 13, color: '#8a8580', background: 'rgba(201,169,110,0.05)', border: '1px solid rgba(201,169,110,0.15)', borderRadius: 3, padding: '10px 14px', marginBottom: 16 }}>
               Kleinunternehmer gemäß § 19 UStG – keine Umsatzsteuer
             </div>
           ) : (
-            <div className="text-sm text-gray-600 mb-4">
+            <div style={{ fontSize: 13, color: '#8a8580', marginBottom: 16 }}>
               Umsatzsteuer: 19%
             </div>
           )}
 
-          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-            <div className="flex justify-between text-sm text-gray-600">
+          <div style={{ background: '#111111', borderRadius: 3, border: '1px solid rgba(201,169,110,0.1)', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8a8580' }}>
               <span>Nettobetrag</span>
-              <span className="font-mono">{formatCurrency(subtotal)}</span>
+              <span style={{ fontFamily: 'monospace' }}>{formatCurrency(subtotal)}</span>
             </div>
             {!isKleinunternehmer && (
-              <div className="flex justify-between text-sm text-gray-600">
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8a8580' }}>
                 <span>MwSt. (19%)</span>
-                <span className="font-mono">{formatCurrency(taxAmount)}</span>
+                <span style={{ fontFamily: 'monospace' }}>{formatCurrency(taxAmount)}</span>
               </div>
             )}
-            <div className="flex justify-between text-base font-bold text-gray-900 pt-2 border-t border-gray-200">
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 700, color: '#f5f2ee', paddingTop: 8, borderTop: '1px solid rgba(201,169,110,0.15)' }}>
               <span>Gesamtbetrag</span>
-              <span className="font-mono">{formatCurrency(total)}</span>
+              <span style={{ fontFamily: 'monospace', color: '#c9a96e' }}>{formatCurrency(total)}</span>
             </div>
           </div>
         </div>
 
         {/* Notes */}
-        <div className="p-6">
-          <h2 className="font-semibold text-gray-800 mb-4">Notizen (optional)</h2>
+        <div style={sectionStyle}>
+          <h2 style={sectionHeadingStyle}>Notizen (optional)</h2>
           <textarea
             value={notes}
             onChange={e => setNotes(e.target.value)}
             rows={3}
             placeholder="Interne Notizen oder Anmerkungen auf der Rechnung..."
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{ ...inputStyle, resize: 'vertical' }}
           />
         </div>
 
         {/* Actions */}
-        <div className="p-6 flex gap-3 justify-end">
+        <div style={{ padding: '20px 24px', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600"
+            style={{ padding: '8px 18px', fontSize: 13, background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', borderRadius: 3, cursor: 'pointer' }}
           >
             Abbrechen
           </button>
           <button
             onClick={() => handleSubmit('list')}
             disabled={saving}
-            className="px-4 py-2 text-sm border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 disabled:opacity-50"
+            style={{ padding: '8px 18px', fontSize: 13, background: 'transparent', border: '1px solid rgba(201,169,110,0.3)', color: '#c9a96e', borderRadius: 3, cursor: 'pointer', opacity: saving ? 0.5 : 1 }}
           >
             {saving ? 'Speichern...' : 'Speichern'}
           </button>
           <button
             onClick={() => handleSubmit('print')}
             disabled={saving}
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            style={{ padding: '8px 18px', fontSize: 13, background: '#c9a96e', color: '#111111', borderRadius: 3, border: 'none', cursor: 'pointer', fontWeight: 600, opacity: saving ? 0.5 : 1 }}
           >
             {saving ? 'Speichern...' : 'Vorschau & PDF'}
           </button>
@@ -455,7 +500,11 @@ function NewInvoiceContent() {
 
 export default function NewInvoicePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-gray-500">Lade Formular...</div>}>
+    <Suspense fallback={
+      <div style={{ padding: '40px', fontFamily: '"DM Sans", system-ui, sans-serif', color: '#8a8580', background: '#111111', minHeight: '100vh' }}>
+        Lade Formular...
+      </div>
+    }>
       <NewInvoiceContent />
     </Suspense>
   )
