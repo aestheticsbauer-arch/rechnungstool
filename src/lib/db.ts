@@ -1,30 +1,25 @@
-import Database from 'better-sqlite3'
-import path from 'path'
-import fs from 'fs'
+import { createClient, type Client } from '@libsql/client'
 
-const DATA_DIR = path.join(process.cwd(), 'data')
-const DB_PATH = path.join(DATA_DIR, 'rechnungen.db')
+let client: Client | null = null
 
-let db: Database.Database | null = null
+export function getDb(): Client {
+  if (client) return client
 
-export function getDb(): Database.Database {
-  if (db) return db
+  const url = process.env.TURSO_DATABASE_URL
+  const authToken = process.env.TURSO_AUTH_TOKEN
 
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true })
+  if (!url) {
+    throw new Error('TURSO_DATABASE_URL ist nicht gesetzt')
   }
 
-  db = new Database(DB_PATH)
-  db.pragma('journal_mode = WAL')
-  db.pragma('foreign_keys = ON')
-
-  initSchema(db)
-
-  return db
+  client = createClient({ url, authToken })
+  return client
 }
 
-function initSchema(db: Database.Database) {
-  db.exec(`
+export async function initDb(): Promise<void> {
+  const db = getDb()
+
+  await db.executeMultiple(`
     CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL DEFAULT ''
@@ -59,8 +54,7 @@ function initSchema(db: Database.Database) {
       total REAL NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'Entwurf',
       notes TEXT NOT NULL DEFAULT '',
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
     CREATE TABLE IF NOT EXISTS expenses (
@@ -73,7 +67,6 @@ function initSchema(db: Database.Database) {
     );
   `)
 
-  // Insert default settings if not exist
   const defaultSettings: Record<string, string> = {
     company_name: '',
     company_address: '',
@@ -93,11 +86,10 @@ function initSchema(db: Database.Database) {
     invoice_suffix: 'Bauer',
   }
 
-  const insertSetting = db.prepare(
-    'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)'
-  )
-
   for (const [key, value] of Object.entries(defaultSettings)) {
-    insertSetting.run(key, value)
+    await db.execute({
+      sql: 'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)',
+      args: [key, value],
+    })
   }
 }

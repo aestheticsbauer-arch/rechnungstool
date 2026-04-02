@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server'
-import { getDb } from '@/lib/db'
-import type { Customer } from '@/lib/types'
+import { getDb, initDb } from '@/lib/db'
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await initDb()
     const { id } = await params
     const db = getDb()
-    const customer = db.prepare('SELECT * FROM customers WHERE id = ?').get(id) as Customer | undefined
-    if (!customer) {
+    const result = await db.execute({
+      sql: 'SELECT * FROM customers WHERE id = ?',
+      args: [id],
+    })
+    if (result.rows.length === 0) {
       return NextResponse.json({ error: 'Kunde nicht gefunden' }, { status: 404 })
     }
-    return NextResponse.json(customer)
+    return NextResponse.json(result.rows[0])
   } catch (error) {
     console.error('GET /api/customers/[id] error:', error)
     return NextResponse.json({ error: 'Fehler beim Laden des Kunden' }, { status: 500 })
@@ -25,6 +28,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await initDb()
     const { id } = await params
     const db = getDb()
     const body = await request.json()
@@ -33,37 +37,32 @@ export async function PUT(
       return NextResponse.json({ error: 'Kundenname ist erforderlich' }, { status: 400 })
     }
 
-    const stmt = db.prepare(`
-      UPDATE customers SET
-        name = @name,
-        contact_name = @contact_name,
-        address = @address,
-        postal_code = @postal_code,
-        city = @city,
-        country = @country,
-        email = @email,
-        tax_id = @tax_id,
-        default_service = @default_service,
-        default_amount = @default_amount
-      WHERE id = @id
-    `)
-
-    stmt.run({
-      id,
-      name: body.name?.trim() || '',
-      contact_name: body.contact_name?.trim() || '',
-      address: body.address?.trim() || '',
-      postal_code: body.postal_code?.trim() || '',
-      city: body.city?.trim() || '',
-      country: body.country?.trim() || 'Deutschland',
-      email: body.email?.trim() || '',
-      tax_id: body.tax_id?.trim() || '',
-      default_service: body.default_service?.trim() || '',
-      default_amount: Number(body.default_amount) || 0,
+    await db.execute({
+      sql: `UPDATE customers SET
+              name = ?, contact_name = ?, address = ?, postal_code = ?,
+              city = ?, country = ?, email = ?, tax_id = ?,
+              default_service = ?, default_amount = ?
+            WHERE id = ?`,
+      args: [
+        body.name?.trim() || '',
+        body.contact_name?.trim() || '',
+        body.address?.trim() || '',
+        body.postal_code?.trim() || '',
+        body.city?.trim() || '',
+        body.country?.trim() || 'Deutschland',
+        body.email?.trim() || '',
+        body.tax_id?.trim() || '',
+        body.default_service?.trim() || '',
+        Number(body.default_amount) || 0,
+        id,
+      ],
     })
 
-    const customer = db.prepare('SELECT * FROM customers WHERE id = ?').get(id) as Customer
-    return NextResponse.json(customer)
+    const result = await db.execute({
+      sql: 'SELECT * FROM customers WHERE id = ?',
+      args: [id],
+    })
+    return NextResponse.json(result.rows[0])
   } catch (error) {
     console.error('PUT /api/customers/[id] error:', error)
     return NextResponse.json({ error: 'Fehler beim Aktualisieren des Kunden' }, { status: 500 })
@@ -75,9 +74,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await initDb()
     const { id } = await params
     const db = getDb()
-    db.prepare('DELETE FROM customers WHERE id = ?').run(id)
+    await db.execute({ sql: 'DELETE FROM customers WHERE id = ?', args: [id] })
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('DELETE /api/customers/[id] error:', error)

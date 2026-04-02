@@ -1,54 +1,52 @@
 import { NextResponse } from 'next/server'
-import { getDb } from '@/lib/db'
-import type { Invoice, InvoiceRow } from '@/lib/types'
+import { getDb, initDb } from '@/lib/db'
+import type { Invoice } from '@/lib/types'
 
-function parseInvoiceRow(row: InvoiceRow): Invoice {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseInvoiceRow(row: any): Invoice {
   return {
     ...row,
+    id: Number(row.id),
+    customer_id: row.customer_id ? Number(row.customer_id) : null,
+    subtotal: Number(row.subtotal),
+    tax_rate: Number(row.tax_rate),
+    tax_amount: Number(row.tax_amount),
+    total: Number(row.total),
     customer_snapshot: typeof row.customer_snapshot === 'string'
       ? JSON.parse(row.customer_snapshot)
-      : row.customer_snapshot,
+      : (row.customer_snapshot || {}),
     items: typeof row.items === 'string'
       ? JSON.parse(row.items)
-      : row.items,
+      : (row.items || []),
     status: row.status as Invoice['status'],
   }
 }
 
 export async function GET(request: Request) {
   try {
+    await initDb()
     const db = getDb()
     const { searchParams } = new URL(request.url)
     const year = searchParams.get('year')
     const status = searchParams.get('status')
     const customerId = searchParams.get('customer_id')
 
-    let query = `
+    let sql = `
       SELECT i.*, c.name as customer_name
       FROM invoices i
       LEFT JOIN customers c ON i.customer_id = c.id
       WHERE 1=1
     `
-    const queryParams: (string | number)[] = []
+    const args: (string | number)[] = []
 
-    if (year) {
-      query += ` AND strftime('%Y', i.date) = ?`
-      queryParams.push(year)
-    }
-    if (status) {
-      query += ` AND i.status = ?`
-      queryParams.push(status)
-    }
-    if (customerId) {
-      query += ` AND i.customer_id = ?`
-      queryParams.push(customerId)
-    }
+    if (year) { sql += ` AND strftime('%Y', i.date) = ?`; args.push(year) }
+    if (status) { sql += ` AND i.status = ?`; args.push(status) }
+    if (customerId) { sql += ` AND i.customer_id = ?`; args.push(customerId) }
 
-    query += ' ORDER BY i.date DESC, i.created_at DESC'
+    sql += ' ORDER BY i.date DESC, i.created_at DESC'
 
-    const rows = db.prepare(query).all(...queryParams) as InvoiceRow[]
-    const invoices = rows.map(parseInvoiceRow)
-    return NextResponse.json(invoices)
+    const result = await db.execute({ sql, args })
+    return NextResponse.json(result.rows.map(parseInvoiceRow))
   } catch (error) {
     console.error('GET /api/invoices error:', error)
     return NextResponse.json({ error: 'Fehler beim Laden der Rechnungen' }, { status: 500 })
@@ -57,6 +55,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    await initDb()
     const db = getDb()
     const body = await request.json()
 
@@ -73,36 +72,30 @@ export async function POST(request: Request) {
     const taxAmount = subtotal * (taxRate / 100)
     const total = subtotal + taxAmount
 
-    const customerSnapshot = body.customer_snapshot || {}
-
-    const stmt = db.prepare(`
-      INSERT INTO invoices (invoice_number, customer_id, customer_snapshot, date, service_period, items, subtotal, tax_rate, tax_amount, total, status, notes)
-      VALUES (@invoice_number, @customer_id, @customer_snapshot, @date, @service_period, @items, @subtotal, @tax_rate, @tax_amount, @total, @status, @notes)
-    `)
-
-    const result = stmt.run({
-      invoice_number: body.invoice_number.trim(),
-      customer_id: body.customer_id || null,
-      customer_snapshot: JSON.stringify(customerSnapshot),
-      date: body.date,
-      service_period: body.service_period?.trim() || '',
-      items: JSON.stringify(items),
-      subtotal,
-      tax_rate: taxRate,
-      tax_amount: taxAmount,
-      total,
-      status: body.status || 'Entwurf',
-      notes: body.notes?.trim() || '',
+    const result = await db.execute({
+      sql: `INSERT INTO invoices (invoice_number, customer_id, customer_snapshot, date, service_period, items, subtotal, tax_rate, tax_amount, total, status, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        body.invoice_number.trim(),
+        body.customer_id || null,
+        JSON.stringify(body.customer_snapshot || {}),
+        body.date,
+        body.service_period?.trim() || '',
+        JSON.stringify(items),
+        subtotal,
+        taxRate,
+        taxAmount,
+        total,
+        body.status || 'Entwurf',
+        body.notes?.trim() || '',
+      ],
     })
 
-    const row = db.prepare(`
-      SELECT i.*, c.name as customer_name
-      FROM invoices i
-      LEFT JOIN customers c ON i.customer_id = c.id
-      WHERE i.id = ?
-    `).get(result.lastInsertRowid) as InvoiceRow
-
-    return NextResponse.json(parseInvoiceRow(row), { status: 201 })
+    const row = await db.execute({
+      sql: `SELECT i.*, c.name as customer_name FROM invoices i LEFT JOIN customers c ON i.customer_id = c.id WHERE i.id = ?`,
+      args: [result.lastInsertRowid],
+    })
+    return NextResponse.json(parseInvoiceRow(row.rows[0]), { status: 201 })
   } catch (error) {
     console.error('POST /api/invoices error:', error)
     const msg = error instanceof Error && error.message.includes('UNIQUE')

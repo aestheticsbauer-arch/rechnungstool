@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server'
-import { getDb } from '@/lib/db'
+import { getDb, initDb } from '@/lib/db'
 
 export async function GET() {
   try {
+    await initDb()
     const db = getDb()
 
-    const rows = db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string }[]
+    const settingsResult = await db.execute('SELECT key, value FROM settings')
     const settings: Record<string, string> = {}
-    for (const row of rows) settings[row.key] = row.value
+    for (const row of settingsResult.rows) {
+      settings[String(row.key)] = String(row.value)
+    }
 
     const prefix = settings.invoice_prefix || 'RE'
     const suffix = settings.invoice_suffix || ''
@@ -15,30 +18,29 @@ export async function GET() {
     const year = now.getFullYear()
     const month = String(now.getMonth() + 1).padStart(2, '0')
 
-    // Base number for this year-month, e.g. "RE-2026-03-Bauer"
     const base = suffix
       ? `${prefix}-${year}-${month}-${suffix}`
       : `${prefix}-${year}-${month}`
 
-    // Check if that exact number already exists, if so append -2, -3, …
-    const exact = db.prepare(
-      'SELECT invoice_number FROM invoices WHERE invoice_number = ?'
-    ).get(base) as { invoice_number: string } | undefined
+    const exact = await db.execute({
+      sql: 'SELECT invoice_number FROM invoices WHERE invoice_number = ?',
+      args: [base],
+    })
 
-    if (!exact) {
+    if (exact.rows.length === 0) {
       return NextResponse.json({ next_number: base })
     }
 
-    // Find the highest existing numbered variant for this base
     const pattern = `${base}-%`
-    const variants = db.prepare(
-      'SELECT invoice_number FROM invoices WHERE invoice_number = ? OR invoice_number LIKE ? ORDER BY invoice_number'
-    ).all(base, pattern) as { invoice_number: string }[]
+    const variants = await db.execute({
+      sql: 'SELECT invoice_number FROM invoices WHERE invoice_number = ? OR invoice_number LIKE ? ORDER BY invoice_number',
+      args: [base, pattern],
+    })
 
     let max = 1
-    for (const v of variants) {
-      if (v.invoice_number === base) continue
-      const tail = v.invoice_number.slice(base.length + 1) // after "base-"
+    for (const v of variants.rows) {
+      if (String(v.invoice_number) === base) continue
+      const tail = String(v.invoice_number).slice(base.length + 1)
       const n = parseInt(tail, 10)
       if (!isNaN(n) && n > max) max = n
     }
