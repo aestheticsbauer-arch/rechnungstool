@@ -37,6 +37,10 @@ export default function InvoicePrintPage() {
 
   useEffect(() => {
     if (!loading && invoice && settings) {
+      const customerName = invoice.customer_snapshot?.name || ''
+      document.title = customerName
+        ? `${invoice.invoice_number} ${customerName}`
+        : invoice.invoice_number
       const t = setTimeout(() => window.print(), 600)
       return () => clearTimeout(t)
     }
@@ -83,13 +87,13 @@ export default function InvoicePrintPage() {
           background: #000000;
           width: 210mm;
           margin: 20px auto 0 auto;
-          padding: 14px 20mm;
+          padding: 18px 20mm;
           display: flex;
           align-items: center;
         }
 
         .logo-strip img {
-          height: 48px;
+          height: 120px;
           width: auto;
           display: block;
           transform: rotate(-90deg);
@@ -164,7 +168,13 @@ export default function InvoicePrintPage() {
         }
       `}</style>
 
-      <button className="print-btn" onClick={() => window.print()}>
+      <button className="print-btn" onClick={() => {
+        const customerName = invoice.customer_snapshot?.name || ''
+        document.title = customerName
+          ? `${invoice.invoice_number} ${customerName}`
+          : invoice.invoice_number
+        window.print()
+      }}>
         Drucken / Als PDF speichern
       </button>
 
