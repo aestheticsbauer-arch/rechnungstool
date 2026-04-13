@@ -93,7 +93,7 @@ export async function POST(request: Request) {
 
     const row = await db.execute({
       sql: `SELECT i.*, c.name as customer_name FROM invoices i LEFT JOIN customers c ON i.customer_id = c.id WHERE i.id = ?`,
-      args: [result.lastInsertRowid],
+      args: [Number(result.lastInsertRowid)],
     })
     return NextResponse.json(parseInvoiceRow(row.rows[0]), { status: 201 })
   } catch (error) {

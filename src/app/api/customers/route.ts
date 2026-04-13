@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
     const row = await db.execute({
       sql: 'SELECT * FROM customers WHERE id = ?',
-      args: [result.lastInsertRowid],
+      args: [Number(result.lastInsertRowid)],
     })
     return NextResponse.json(row.rows[0], { status: 201 })
   } catch (error) {

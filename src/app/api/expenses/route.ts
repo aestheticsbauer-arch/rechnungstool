@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     const row = await db.execute({
       sql: 'SELECT * FROM expenses WHERE id = ?',
-      args: [result.lastInsertRowid],
+      args: [Number(result.lastInsertRowid)],
     })
     return NextResponse.json(row.rows[0], { status: 201 })
   } catch (error) {
