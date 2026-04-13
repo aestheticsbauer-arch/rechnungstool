@@ -16,6 +16,8 @@ interface StatsData {
   year: number
   monthly: MonthlyData[]
   total_income: number
+  eur_total_income: number
+  eur_net: number
   total_expenses: number
   net: number
   invoices: Array<{ id: number; invoice_number: string; customer_name: string; date: string; total: number; status: string }>

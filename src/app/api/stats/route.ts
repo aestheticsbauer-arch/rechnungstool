@@ -8,6 +8,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const year = searchParams.get('year') || new Date().getFullYear().toString()
 
+    // Monthly overview: ALL invoices regardless of status
     const monthlyIncomeResult = await db.execute({
       sql: `SELECT
               CAST(strftime('%m', date) AS INTEGER) as month,
@@ -15,7 +16,6 @@ export async function GET(request: Request) {
               COUNT(*) as invoice_count
             FROM invoices
             WHERE strftime('%Y', date) = ?
-              AND status IN ('Bezahlt', 'Versendet')
             GROUP BY month
             ORDER BY month`,
       args: [year],
@@ -32,6 +32,7 @@ export async function GET(request: Request) {
 
     const totalIncome = monthly.reduce((sum, m) => sum + m.income, 0)
 
+    // Monthly expenses
     const monthlyExpenseResult = await db.execute({
       sql: `SELECT
               CAST(strftime('%m', date) AS INTEGER) as month,
@@ -53,6 +54,7 @@ export async function GET(request: Request) {
 
     const totalExpenses = monthlyWithExpenses.reduce((sum, m) => sum + m.expenses, 0)
 
+    // EÜR invoices: only Versendet + Bezahlt (officially confirmed income)
     const invoiceResult = await db.execute({
       sql: `SELECT i.*, c.name as customer_name
             FROM invoices i
@@ -63,6 +65,10 @@ export async function GET(request: Request) {
       args: [year],
     })
 
+    // EÜR total income (only confirmed)
+    const eurTotalIncome = invoiceResult.rows.reduce((sum, r) => sum + Number(r.total), 0)
+
+    // All expenses for the year
     const expenseResult = await db.execute({
       sql: `SELECT * FROM expenses WHERE strftime('%Y', date) = ? ORDER BY date ASC`,
       args: [year],
@@ -72,8 +78,10 @@ export async function GET(request: Request) {
       year: parseInt(year),
       monthly: monthlyWithExpenses,
       total_income: totalIncome,
+      eur_total_income: eurTotalIncome,
       total_expenses: totalExpenses,
       net: totalIncome - totalExpenses,
+      eur_net: eurTotalIncome - totalExpenses,
       invoices: invoiceResult.rows.map(r => ({
         id: Number(r.id),
         invoice_number: String(r.invoice_number),
